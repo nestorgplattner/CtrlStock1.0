@@ -1,0 +1,112 @@
+﻿<Window x:Class="CapaPresentacionWPF.frmCategoria"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Gestor de Categorías y Subcategorías" Height="540" Width="800"
+        WindowStartupLocation="CenterScreen"
+        Background="#f0f2f5">
+
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#ccc"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="#007bff"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#007bff"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Panel Categorías -->
+        <Border Grid.Column="0" Background="White" Padding="15" Margin="0,0,10,0" CornerRadius="10" BorderBrush="#ccc" BorderThickness="1">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,10">
+                    <TextBlock Text="Categorías" FontSize="24" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center"/>
+                    <Button x:Name="btnAgregarCategoria" Content="+ Agregar Categoría" Click="BtnAgregarCategoria_Click" Margin="20,0,0,0" Padding="8,4" FontSize="14" Width="140"/>
+                </StackPanel>
+
+                <ListBox x:Name="lstCategorias" FontSize="16" 
+         SelectionChanged="LstCategorias_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" >
+                                <TextBlock Text="{Binding Nombre}" VerticalAlignment="Center" Width="200"/>
+                                <Button Content="❌" Width="30" Background="Transparent"
+        BorderBrush="Transparent" Foreground="Red" FontSize="16" Height="25" Margin="10,0,0,0" 
+                        Click="BtnEliminarCategoria_Click"
+                        Tag="{Binding IdCategoria}" 
+                        ToolTip="Eliminar categoría"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Panel Subcategorías -->
+        <Border Grid.Column="1" Background="White" Padding="15" Margin="10,0,0,0" CornerRadius="10" BorderBrush="#ccc" BorderThickness="1">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,10">
+                    <TextBlock Text="Subcategorías" FontSize="24" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center"/>
+                    <Button x:Name="btnAgregarSubcategoria" Content="+ Agregar Subcategoría" Click="BtnAgregarSubcategoria_Click" Margin="20,0,0,0" Padding="8,4" FontSize="14" Width="160"/>
+                </StackPanel>
+
+                <ListBox x:Name="lstSubcategorias" FontSize="16">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" >
+                                <TextBlock Text="{Binding Nombre}" VerticalAlignment="Center" Width="200"/>
+                                <Button Content="❌" Width="30" Foreground="Red" FontSize="16" Background="Transparent"
+        BorderBrush="Transparent" Height="25" Margin="10,0,0,0" 
+                        Click="BtnEliminarSubcategoria_Click"
+                        Tag="{Binding IdCategoria}"
+                        ToolTip="Eliminar subcategoría"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

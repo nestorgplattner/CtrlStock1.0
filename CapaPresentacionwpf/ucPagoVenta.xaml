@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="CapaPresentacionwpf.ucPagoVenta"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="Auto" Width="Auto">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- DataGrid de pagos -->
+        <DataGrid x:Name="dgPagos"
+                  AutoGenerateColumns="False"
+                  Grid.Row="0"
+                  Margin="0,0,0,10"
+                  CellEditEnding="dgPagos_CellEditEnding"
+                  CanUserAddRows="False"
+                  HeadersVisibility="Column"
+                  RowHeight="30">
+            <DataGrid.Columns>
+                <DataGridComboBoxColumn Header="Plataforma" SelectedItemBinding="{Binding Plataforma}" Width="*"/>
+                <DataGridComboBoxColumn Header="Medio de Pago" SelectedItemBinding="{Binding MedioPago}" Width="*"/>
+                <DataGridTextColumn Header="Monto" Binding="{Binding Monto}" Width="*" />
+                <DataGridTextColumn Header="Cuotas" Binding="{Binding Cuotas}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Botones para agregar y quitar -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="1" Margin="0,0,0,10">
+            <Button Content="Agregar Pago" Width="120" Margin="0,0,10,0" Click="BtnAgregar_Click"/>
+            <Button Content="Quitar Pago" Width="120" Click="BtnQuitar_Click"/>
+        </StackPanel>
+
+        <!-- Resumen -->
+        <TextBlock x:Name="txtResumen"
+                   Grid.Row="2"
+                   Margin="0,10,0,0"
+                   FontSize="14"
+                   FontWeight="Bold"
+                   Foreground="DarkGreen"
+                   Text="Resumen de pagos..." />
+    </Grid>
+</UserControl>

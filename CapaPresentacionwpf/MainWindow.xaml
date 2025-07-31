@@ -1,0 +1,142 @@
+﻿<Window x:Class="CapaPresentacionWPF.MainWindow"
+        xmlns:views="clr-namespace:CapaPresentacionWPF.UserControls"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        Title="Sistema de Control Stock" Height="768" Width="1024" 
+        Background="White" FontFamily="Segoe UI" FontSize="14"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized">
+
+    <Window.Resources>
+        <Style x:Key="SidebarButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#374151" />
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Left" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#EFF6FF"/>
+                                <Setter Property="Foreground" Value="#2563EB"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#DBEAFE"/>
+                                <Setter Property="Foreground" Value="#1E40AF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SidebarButtonActiveStyle" TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#1E40AF" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="256"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="White"
+        BorderBrush="#E5E7EB" BorderThickness="0,0,1,0">
+            <Border.RenderTransform>
+                <TranslateTransform x:Name="SidebarTransform" X="0"/>
+            </Border.RenderTransform>
+            <StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="20" VerticalAlignment="Center" Height="56" >
+                    <Border Width="36" Height="36" Background="#2563EB" CornerRadius="8" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <iconPacks:PackIconMaterial Kind="Package" Foreground="White" Width="24" Height="24" />
+                    </Border>
+                    <TextBlock Text="Sistema Gestión" FontWeight="Bold" FontSize="20" Margin="10,0,0,0" VerticalAlignment="Center" Foreground="#111827" />
+                </StackPanel>
+
+                <StackPanel Margin="10,10,10,0" x:Name="MenuStackPanel" >
+                    <Button Style="{StaticResource SidebarButtonStyle}" Tag="Dashboard" Click="MenuButton_Click">
+                        <StackPanel Orientation="Horizontal" >
+                            <iconPacks:PackIconMaterial Kind="ViewDashboard" Width="24" Height="24" Foreground="#374151" />
+                            <TextBlock Text="Dashboard" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource SidebarButtonStyle}" Tag="Productos" Click="MenuButton_Click">
+                        <StackPanel Orientation="Horizontal" >
+                            <iconPacks:PackIconMaterial Kind="Package" Width="24" Height="24" Foreground="#374151" />
+                            <TextBlock Text="Gestión Productos" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource SidebarButtonStyle}" Tag="Ventas" Click="MenuButton_Click">
+                        <StackPanel Orientation="Horizontal" >
+                            <iconPacks:PackIconMaterial Kind="Cart" Width="24" Height="24" Foreground="#374151" />
+                            <TextBlock Text="Sistema Ventas" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource SidebarButtonStyle}" Tag="Registros" Click="MenuButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="ClipboardList" Width="24" Height="24" Foreground="#374151" />
+                            <TextBlock Text="Registros" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+
+                <StackPanel VerticalAlignment="Bottom" Margin="10" Height="Auto">
+                    <Button Style="{StaticResource SidebarButtonStyle}" Tag="Salir" Click="Salir_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="Logout" Width="24" Height="24" Foreground="#374151" />
+                            <TextBlock Text="Salir" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Column="1" Background="#F9FAFB">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="64"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Background="White" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1" Grid.Row="0" >
+                <Grid Margin="20,0" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button Width="40" Height="40" Background="Transparent" BorderThickness="0" Cursor="Hand">
+                        <iconPacks:PackIconMaterial Kind="Menu" Width="28" Height="28" Foreground="#374151" />
+                    </Button>
+
+                    <TextBlock x:Name="TituloSeccion" Grid.Column="1" Text="Gestión Productos" FontWeight="SemiBold" FontSize="18" VerticalAlignment="Center" Foreground="#111827" />
+
+                    <TextBlock Grid.Column="2" Text="{Binding FechaActual}" Foreground="#6B7280" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <ContentControl x:Name="ContentArea" Grid.Row="1" Margin="20" />
+        </Grid>
+
+    </Grid>
+</Window>

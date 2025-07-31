@@ -1,0 +1,172 @@
+﻿<Window x:Class="CapaPresentacionWPF.VentanaFacturacion"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Facturar a Cliente"
+        Height="703" Width="552"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#f0f2f5" FontFamily="Segoe UI">
+
+    <Window.Resources>
+        <!-- Sombra para paneles (reutilizada del ucVenta) -->
+        <DropShadowEffect x:Key="PanelShadow" ShadowDepth="3" BlurRadius="10" Color="#888" Opacity="0.15"/>
+
+        <!-- Estilo Botón Principal (reutilizado del ucVenta) -->
+        <Style TargetType="Button" x:Key="BotonPrincipal">
+            <Setter Property="Background" Value="#007acc"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#005fa3"/>
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#004477" BlurRadius="15" ShadowDepth="0" Opacity="0.4"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#004477"/>
+                                <Setter TargetName="border" Property="Effect" Value="{x:Null}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#ccc"/>
+                                <Setter Property="Foreground" Value="#888"/>
+                                <Setter TargetName="border" Property="Effect" Value="{x:Null}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo Botón Eliminar (reutilizado del ucVenta) -->
+        <Style TargetType="Button" x:Key="BotonEliminar" BasedOn="{StaticResource BotonPrincipal}">
+            <Setter Property="Background" Value="#e53935"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="12" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#b72b24"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#8a1d1a" BlurRadius="15" ShadowDepth="0" Opacity="0.4"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#8a1d1a"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo TextBox con borde redondeado y sombra (reutilizado del ucVenta) -->
+        <Style TargetType="TextBox" x:Key="InputTextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#ccc"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="0 5"/>
+            <!-- Ajustado para la ventana -->
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10" >
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#007acc"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#007acc" BlurRadius="12" ShadowDepth="0" Opacity="0.3"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo para TextBlocks de etiquetas -->
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="Margin" Value="0,10,0,5"/>
+        </Style>
+
+    </Window.Resources>
+
+    <Border Background="White" CornerRadius="15" Effect="{StaticResource PanelShadow}" Margin="20">
+        <Grid Margin="25,25,25,43">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto" MinHeight="75"/>
+            </Grid.RowDefinitions>
+
+            <!-- Título de la ventana -->
+            <TextBlock Grid.Row="0" Text="Datos del Cliente para Facturación" FontSize="24" FontWeight="Bold" Margin="0,0,0,20" Foreground="#222" HorizontalAlignment="Center" Width="384"/>
+
+            <StackPanel Grid.Row="1">
+                <TextBlock Text="CUIT o DNI:" Style="{StaticResource LabelStyle}"/>
+                <TextBox x:Name="txtCUIT" Style="{StaticResource InputTextBox}" Width="Auto" HorizontalAlignment="Stretch"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,15">
+                    <Button x:Name="btnBuscarLocal" Content="Buscar local" Style="{StaticResource BotonPrincipal}" Width="120" Height="35"/>
+                    <Button x:Name="btnBuscarOnline" Content="Buscar online" Style="{StaticResource BotonPrincipal}" Width="120" Height="35"/>
+                    <Button x:Name="btnNuevo" Content="Nuevo Cliente" Style="{StaticResource BotonPrincipal}" Width="120" Height="35"/>
+                </StackPanel>
+
+                <TextBlock Text="Nombre/Razón Social:" Style="{StaticResource LabelStyle}"/>
+                <TextBox x:Name="txtNombre" Style="{StaticResource InputTextBox}" Width="Auto" HorizontalAlignment="Stretch"/>
+
+                <TextBlock Text="Domicilio Fiscal:" Style="{StaticResource LabelStyle}"/>
+                <TextBox x:Name="txtDomicilio" Style="{StaticResource InputTextBox}" Width="Auto" HorizontalAlignment="Stretch"/>
+
+                <TextBlock Text="Condición IVA:" Style="{StaticResource LabelStyle}"/>
+                <TextBox x:Name="txtCondicion" Style="{StaticResource InputTextBox}" Width="Auto" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right" Margin="0,25,0,0" Width="260">
+                <Button x:Name="btnConfirmar" Content="Confirmar" Style="{StaticResource BotonPrincipal}" Width="120" Height="40"/>
+                <Button x:Name="btnCancelar" Content="Cancelar" Style="{StaticResource BotonEliminar}" Width="120" Height="40" Margin="10,0,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

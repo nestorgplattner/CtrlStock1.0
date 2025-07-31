@@ -1,0 +1,123 @@
+﻿<UserControl x:Class="CapaPresentacionWPF.UserControls.ucProducto"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#f0f2f5" HorizontalAlignment="Stretch"
+VerticalAlignment="Stretch">
+
+    <UserControl.Resources>
+        <Style TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="BorderBrush" Value="#ddd"/>
+            <Setter Property="Padding" Value="4"/>
+        </Style>
+        <!-- Estilo de botones modernos -->
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="#007acc"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#007acc"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!-- Título y botones -->
+        <DockPanel Grid.Row="0" LastChildFill="False" Margin="0,0,0,10">
+            <TextBlock Text="Gestión de Productos" FontSize="24" FontWeight="Bold" Foreground="#333" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                <Button Content="Categorías" Background="#4CAF50" Foreground="White" Width="120" Click="BtnEditarCategorias_Click"/>
+                <Button Content="✏️ Nuevo Producto" Background="#4CAF50" Foreground="White" Width="150" Click="BtnNuevoProducto_Click" Height="40"/>
+            </StackPanel>
+
+        </DockPanel>
+
+        <Border Grid.Row="1" Background="White" Padding="10" Margin="0,0,0,10" CornerRadius="10" BorderBrush="#ccc" BorderThickness="1">
+            <DockPanel LastChildFill="True">
+                <!-- Buscador a la izquierda -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
+                    <TextBlock Text="Buscar:" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="14"/>
+                    <TextBox x:Name="txtBuscar" Width="286" FontSize="14" Height="36" VerticalContentAlignment="Center" TextChanged="txtBuscar_TextChanged" />
+                </StackPanel>
+
+                <!-- Paginación a la derecha -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                    <Button x:Name="btnAnterior" Content="⏮" Click="BtnAnterior_Click" Margin="5" Padding="8,4"/>
+                    <Label x:Name="lblPagina" VerticalAlignment="Center" FontSize="14" Foreground="#333" Margin="5,0"/>
+                    <Button x:Name="btnSiguiente" Content="⏭" Click="BtnSiguiente_Click" Margin="5" Padding="8,4"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Tabla -->
+        <Border Grid.Row="2"
+        Background="White"
+        CornerRadius="10"
+        BorderThickness="1"
+        BorderBrush="#ccc"
+        Padding="2">
+
+            <!-- DataGrid con fondo blanco y sin borde propio -->
+            <DataGrid x:Name="dgProductos"
+          AutoGenerateColumns="False"
+          HeadersVisibility="Column"
+          CanUserAddRows="False"
+          IsReadOnly="True"
+          SelectionMode="Single"
+          RowHeight="30"
+          FontSize="14"
+          Background="White"
+          BorderThickness="0"
+          GridLinesVisibility="All"
+          VerticalGridLinesBrush="#ddd"
+          HorizontalGridLinesBrush="#ddd"
+          ColumnHeaderHeight="35">
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Código" Binding="{Binding Codigo}" SortMemberPath="Codigo" />
+                    <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" SortMemberPath="Nombre" />
+                    <DataGridTextColumn Header="Categoría" Binding="{Binding CategoriaNombre}" SortMemberPath="CategoriaNombre" Width="*" />
+                    <DataGridTextColumn Header="Subcategoría" Binding="{Binding SubcategoriaNombre}" SortMemberPath="SubcategoriaNombre" Width="*" />
+                    <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" SortMemberPath="Stock" Width="80" />
+                    <DataGridTextColumn Header="Precio Compra" Binding="{Binding PrecioCompra}" SortMemberPath="PrecioCompra" Width="120" />
+                    <DataGridTextColumn Header="Precio Final" Binding="{Binding PrecioFinal}" SortMemberPath="PrecioFinal" Width="120" />
+
+                    <DataGridTemplateColumn Header="Acciones" Width="150">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
+                                    <Button Content="✏️" ToolTip="Editar" Margin="5,0" Padding="6,2" FontSize="16" Background="#4CAF50" Foreground="White" Click="BtnEditar_Click"/>
+                                    <Button Content="❌" ToolTip="Eliminar" Margin="5,0" Padding="6,2" FontSize="16" Background="#E53935" Foreground="White" Click="BtnEliminar_Click"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+
+
+    </Grid>
+
+</UserControl>

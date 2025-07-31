@@ -1,0 +1,410 @@
+﻿<UserControl x:Class="CapaPresentacionWPF.UserControls.ucVenta"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" Background="#f0f2f5" FontFamily="Segoe UI">
+
+    <UserControl.Resources>
+        <!-- Sombra para paneles -->
+        <DropShadowEffect x:Key="PanelShadow" ShadowDepth="3" BlurRadius="10" Color="#888" Opacity="0.15"/>
+
+        <!-- Estilo Botón Principal -->
+        <Style TargetType="Button" x:Key="BotonPrincipal">
+            <Setter Property="Background" Value="#007acc"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#005fa3"/>
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#004477" BlurRadius="15" ShadowDepth="0" Opacity="0.4"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#004477"/>
+                                <Setter TargetName="border" Property="Effect" Value="{x:Null}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#ccc"/>
+                                <Setter Property="Foreground" Value="#888"/>
+                                <Setter TargetName="border" Property="Effect" Value="{x:Null}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo Botón Eliminar -->
+        <Style TargetType="Button" x:Key="BotonEliminar" BasedOn="{StaticResource BotonPrincipal}">
+            <Setter Property="Background" Value="#e53935"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="12" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#b72b24"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#8a1d1a" BlurRadius="15" ShadowDepth="0" Opacity="0.4"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#8a1d1a"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo TextBox con borde redondeado y sombra -->
+        <Style TargetType="TextBox" x:Key="InputTextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#ccc"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="5 0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10" >
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#007acc"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#007acc" BlurRadius="12" ShadowDepth="0" Opacity="0.3"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo ListView para el carrito -->
+        <Style TargetType="ListView" x:Key="ListaCarrito">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+
+        <!-- Estilo para etiquetas totales -->
+        <Style TargetType="TextBlock" x:Key="LabelTotal">
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="LabelImporteTotal">
+            <Setter Property="FontSize" Value="26"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#007acc"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+        <Style x:Key="InputComboBox" TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#ccc"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="5 0"/>
+            <Setter Property="Height" Value="35"/>
+        </Style>
+
+        <!-- Nuevo estilo para los botones de selección de forma de pago -->
+        <Style TargetType="Button" x:Key="BotonFormaPago" BasedOn="{StaticResource BotonPrincipal}">
+            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#D0D0D0"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#A0A0A0"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#E0E0E0"/>
+                                <Setter Property="Foreground" Value="#888"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2.5*"/>
+            <ColumnDefinition Width="3.5*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Panel izquierdo: Productos -->
+        <StackPanel Grid.Column="0" Background="Transparent">
+            <TextBlock Text="Productos" FontSize="28" FontWeight="Bold" Margin="0,0,0,15" Foreground="#222"/>
+
+            <!-- Buscador con borde redondeado y sombra -->
+            <Border Background="White" CornerRadius="12" BorderBrush="#ddd" BorderThickness="1" Padding="8" Margin="0,0,0,15" Effect="{StaticResource PanelShadow}">
+                <TextBox x:Name="txtBuscarProducto"
+                         Style="{StaticResource InputTextBox}"
+                         Text="Buscar producto..."
+                         Foreground="Gray"
+                         GotFocus="txtBuscarProducto_GotFocus"
+                         LostFocus="txtBuscarProducto_LostFocus"
+                         TextChanged="txtBuscarProducto_TextChanged"/>
+            </Border>
+
+            <!-- Lista de productos -->
+            <Border Background="White" CornerRadius="12" BorderBrush="#ddd" BorderThickness="1" Padding="10" Height="434" Effect="{StaticResource PanelShadow}">
+                <ListBox x:Name="lstProductos" Background="White" BorderThickness="0" FontSize="16" MouseDoubleClick="lstProductos_MouseDoubleClick">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="5" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Codigo}" Margin="10,0,0,0" Width="100" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Nombre}" FontWeight="SemiBold" Width="180" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Stock}" Width="50" FontWeight="SemiBold" Margin="10,0,0,0" >
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="Green" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Stock}" Value="6">
+                                                    <Setter Property="Foreground" Value="Orange" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Stock}" Value="5">
+                                                    <Setter Property="Foreground" Value="Orange" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Stock}" Value="4">
+                                                    <Setter Property="Foreground" Value="Orange" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Stock}" Value="3">
+                                                    <Setter Property="Foreground" Value="Red" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Stock}" Value="2">
+                                                    <Setter Property="Foreground" Value="Red" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Stock}" Value="1">
+                                                    <Setter Property="Foreground" Value="Red" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Stock}" Value="0">
+                                                    <Setter Property="Foreground" Value="Red" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding CategoriaNombre}" Margin="10,0,0,0" Width="130" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding PrecioFinal, StringFormat=C}" Margin="10,0,0,0" Width="90" Foreground="Green" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+
+            <!-- Producto suelto -->
+            <Border Background="White" CornerRadius="12" BorderBrush="#ddd" BorderThickness="1" Padding="10" Margin="0,15,0,0" Effect="{StaticResource PanelShadow}">
+                <StackPanel>
+                    <TextBlock Text="Producto Rápido" FontWeight="SemiBold" FontSize="18" Margin="0,0,0,8"/>
+
+                    <!-- Botones VARIOS y FLOR -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                        <Button x:Name="btnVarios" Content="VARIOS" Width="100" Margin="5,0" Click="btnTipoRapido_Click"/>
+                        <Button x:Name="btnFlor" Content="FLOR" Width="100" Margin="5,0" Click="btnTipoRapido_Click"/>
+                    </StackPanel>
+
+                    <!-- Importe -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                        <TextBlock Text="Importe: $" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBox x:Name="txtImporteRapido" Width="100" Style="{StaticResource InputTextBox}" HorizontalAlignment="Left" Margin="5,0"/>
+                    </StackPanel>
+
+                    <!-- Botón Agregar -->
+                    <Button Content="Agregar al carrito" Style="{StaticResource BotonPrincipal}" Height="40" Click="btnAgregarRapido_Click"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Panel derecho: Carrito y Totales -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="20,0,0,0">
+            <StackPanel Background="Transparent">
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="Items en carrito: " FontWeight="SemiBold" FontSize="18" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBlock x:Name="lblCantidadItems" Text="0" FontWeight="Bold" FontSize="18" Foreground="#007acc" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <Border Background="White" CornerRadius="12" BorderBrush="#ddd" BorderThickness="1" Padding="15" Height="237" Effect="{StaticResource PanelShadow}">
+                    <ListView x:Name="lstCarrito" Background="White" BorderThickness="0" FontSize="16" Margin="0" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Código" Width="100" DisplayMemberBinding="{Binding Codigo}" />
+                                <GridViewColumn Header="Nombre" Width="150" DisplayMemberBinding="{Binding Nombre}" />
+                                <GridViewColumn Header="Cantidad" Width="70" DisplayMemberBinding="{Binding Cantidad}" />
+                                <GridViewColumn Header="Precio Unit." Width="100" DisplayMemberBinding="{Binding PrecioUnitario, StringFormat=C}" />
+                                <GridViewColumn Header="Subtotal" Width="100" DisplayMemberBinding="{Binding Subtotal, StringFormat=C}" />
+                                <GridViewColumn Header="Eliminar" Width="60">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="🗑️" ToolTip="Eliminar item"
+                                                    Click="EliminarItem_Click"
+                                                    Padding="2" Margin="0" FontSize="16" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Border>
+
+                <!-- NUEVO BORDER con cálculos y botones -->
+                <Border Background="White" CornerRadius="12" BorderBrush="#ddd" BorderThickness="1" Padding="20" Margin="0,15,0,0" Effect="{StaticResource PanelShadow}">
+                    <StackPanel>
+                        <!-- Subtotal -->
+                        <Grid Margin="0,0,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Subtotal:" FontSize="18" Foreground="#444"/>
+                            <TextBlock x:Name="lblSubtotal" Grid.Column="1" Text="$0.00" FontSize="18" FontWeight="SemiBold"/>
+                        </Grid>
+
+                        <!-- Descuento -->
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Descuento:" FontSize="18" Foreground="#444"/>
+                            <TextBlock x:Name="lblDescuento" Grid.Column="1" Text="$0.00" FontSize="18" FontWeight="SemiBold"/>
+                        </Grid>
+
+                        <!-- Total -->
+                        <Grid Margin="10,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="TOTAL:" FontSize="20" FontWeight="Bold" Foreground="#222"/>
+                            <TextBlock x:Name="lblTotal" Grid.Column="1" Text="$0.00" FontSize="30" FontWeight="Bold" Foreground="#e53935"/>
+                        </Grid>
+
+                        <!-- Descuentos -->
+                        <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                            <CheckBox x:Name="chkDescuento15" Content="Aplicar descuento 15%" FontSize="16" Margin="0,5,0,0"
+                                      Checked="chkDescuento15_Checked" Unchecked="chkDescuento15_Unchecked"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                <TextBlock Text="Descuento personalizado (%):" VerticalAlignment="Center" FontSize="16" Margin="0,0,10,0"/>
+                                <xctk:IntegerUpDown x:Name="numDescuentoPersonalizado"
+                                                    Width="50"
+                                                    Height="25"
+                                                    Minimum="0"
+                                                    Maximum="100"
+                                                    Value="0"
+                                                    ValueChanged="numDescuentoPersonalizado_ValueChanged"
+                                                    FontSize="16"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Sección de Formas de Pago -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                            <Button x:Name="btnEfectivo" Content="EFECTIVO" Style="{StaticResource BotonFormaPago}" Click="btnSeleccionarFormaPago_Click"/>
+                            <Button x:Name="btnTransferencia" Content="TRANSFERENCIA" Style="{StaticResource BotonFormaPago}" Click="btnSeleccionarFormaPago_Click"/>
+                            <Button x:Name="btnMpTarjetas" Content="MP / TARJETAS" Style="{StaticResource BotonFormaPago}" Click="btnSeleccionarFormaPago_Click"/>
+                        </StackPanel>
+
+                        <!-- Grid para Monto a Pagar y Botón Agregar - Visible solo para múltiples pagos -->
+                        <Grid x:Name="gridMontoPago" Margin="0,10,0,10" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Monto a pagar:" VerticalAlignment="Center" FontSize="16" Margin="0,0,10,0"/>
+                            <TextBox x:Name="txtMontoPago" Grid.Column="1" Style="{StaticResource InputTextBox}" HorizontalAlignment="Stretch" Text="0.00" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" TextChanged="txtMontoPago_TextChanged"/>
+                            <Button x:Name="btnAgregarPago" Content="➕" Grid.Column="2" Style="{StaticResource BotonPrincipal}" Width="40" Height="30" Margin="5,0,0,0" Click="btnAgregarPago_Click" ToolTip="Agregar este pago"/>
+                        </Grid>
+
+                        <TextBlock Text="Pagos Registrados:" FontWeight="SemiBold" FontSize="16" Margin="0,10,0,5"/>
+                        <Border Background="#f8f8f8" BorderBrush="#eee" BorderThickness="1" CornerRadius="8">
+                            <ListBox x:Name="lstPagosRealizados" Height="69" Background="Transparent" BorderThickness="0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <!-- CAMBIO AQUÍ: Mostrar FormaPagoDisplay y Monto -->
+                                            <TextBlock Text="{Binding FormaPagoDisplay}" FontWeight="SemiBold"/>
+                                            <TextBlock Text=" - "/>
+                                            <TextBlock Text="{Binding Monto, StringFormat=C}" Margin="5,0,0,0"/>
+                                            <Button Content="✖️" Tag="{Binding}" Click="btnEliminarPago_Click" Margin="10,0,0,0" Style="{StaticResource BotonEliminar}" Padding="0" Width="20" Height="20" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
+                        <TextBlock x:Name="lblMontoPendiente" Text="Pendiente: $0.00" FontWeight="Bold" FontSize="18" HorizontalAlignment="Right" Margin="0,10,0,0" Foreground="#e53935"/>
+
+                        <!-- Botones de Acción Final -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                            <Button Content="Facturar" Style="{StaticResource BotonPrincipal}" Width="180" Height="45" Click="btnFacturar_Click"/>
+                            <Button Content="Finalizar Compra" Style="{StaticResource BotonPrincipal}" Width="180" Height="45" Click="BtnFinalizarCompra_Click"/>
+                            <Button Content="Cancelar" Style="{StaticResource BotonEliminar}" Width="120" Height="45" Margin="10,0,0,0" Click="ResetearPantalla"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
