@@ -10,7 +10,7 @@ namespace CapaPresentacionWPF.Model
     {
         public int IdComprobante { get; set; }
         public string Tipo { get; set; }
-        
+        public override string ToString() => Tipo;
     }
 }
 

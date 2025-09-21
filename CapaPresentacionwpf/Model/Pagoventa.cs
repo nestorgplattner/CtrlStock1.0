@@ -31,6 +31,7 @@ namespace CapaPresentacionwpf.Model
         public string MedioPago { get; set; }
         public decimal Monto { get; set; }
         public int Cuotas { get; set; }
+        public string FormaPagoDisplay { get; set; } // <--- Agrega esta línea
     }
 
 }

@@ -1,4 +1,4 @@
-﻿using CapaPresentacionwpf.Model;
+﻿
 using CapaPresentacionWPF.Data;
 using CapaPresentacionWPF.Model;
 using CapaPresentacionWPF.Servicios;

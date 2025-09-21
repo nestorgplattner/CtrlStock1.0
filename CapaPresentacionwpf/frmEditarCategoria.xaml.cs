@@ -35,8 +35,6 @@ namespace CapaPresentacionWPF
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
-            // Advertencia: Asegúrate de que tu XAML (frmEditarCategoria.xaml)
-            // contenga un TextBox con el nombre 'txtNombreCategoria'.
             if (txtNombreCategoria == null)
             {
                 MessageBox.Show("El control 'txtNombreCategoria' no se encontró.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -53,6 +51,7 @@ namespace CapaPresentacionWPF
             try
             {
                 _categoriaOriginal.Nombre = nombre;
+
                 if (_categoriaOriginal.IdCategoria == 0)
                 {
                     _categoriaData.AddCategoria(_categoriaOriginal);
@@ -69,6 +68,31 @@ namespace CapaPresentacionWPF
             {
                 MessageBox.Show($"Error al guardar la categoría: {ex.Message}", "Error de Base de Datos", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void BtnAgregarCategoria_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: lógica para agregar categoría
+        }
+
+        private void BtnEditarCategoria_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: lógica para editar categoría
+        }
+
+        private void BtnEliminarCategoria_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: lógica para eliminar categoría
+        }
+
+        private void BtnAgregarSubcategoria_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: lógica para agregar subcategoría
+        }
+
+        private void BtnCerrar_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

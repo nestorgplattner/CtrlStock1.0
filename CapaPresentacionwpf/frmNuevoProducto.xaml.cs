@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using CapaPresentacionWPF.Model; // Asegúrate que este namespace es correcto
+
 using CapaPresentacionWPF.Data; // Asegúrate que este namespace es correcto
 
 namespace CapaPresentacionWPF // Asegúrate que este namespace es correcto
@@ -21,6 +22,7 @@ namespace CapaPresentacionWPF // Asegúrate que este namespace es correcto
         public ObservableCollection<Categoria> CategoriasPrincipales { get; set; }
         public ObservableCollection<Categoria> SubcategoriasDisponibles { get; set; }
         private List<Categoria> todasLasCategorias; // Para filtrar subcategorías
+
 
         // Constructor para AÑADIR nuevo producto
         public frmNuevoProducto()
@@ -38,8 +40,8 @@ namespace CapaPresentacionWPF // Asegúrate que este namespace es correcto
             // Configurar eventos para cálculo automático y visibilidad de oferta
             txtPrecioCompra.LostFocus += CalcularPrecioFinal;
             txtPorcentajeGanancia.LostFocus += CalcularPrecioFinal;
-            chkEnOferta.Checked += ChkEnOferta_Changed;
-            chkEnOferta.Unchecked += ChkEnOferta_Changed;
+            //chkEnOferta.Checked += ChkEnOferta_Changed;
+            //chkEnOferta.Unchecked += ChkEnOferta_Changed;
 
             // Asegurarse de que el DatePicker no esté habilitado por defecto si no hay oferta
             dpOfertaHasta.IsEnabled = false;
@@ -83,11 +85,11 @@ namespace CapaPresentacionWPF // Asegúrate que este namespace es correcto
             // Configurar eventos para cálculo automático y visibilidad de oferta
             txtPrecioCompra.LostFocus += CalcularPrecioFinal;
             txtPorcentajeGanancia.LostFocus += CalcularPrecioFinal;
-            chkEnOferta.Checked += ChkEnOferta_Changed;
-            chkEnOferta.Unchecked += ChkEnOferta_Changed;
+            //chkEnOferta.Checked += ChkEnOferta_Changed;
+            //chkEnOferta.Unchecked += ChkEnOferta_Changed;
 
             // Establecer estado inicial del DatePicker de oferta
-            dpOfertaHasta.IsEnabled = productoActual.Enoferta == 1;
+            //dpOfertaHasta.IsEnabled = productoActual.Enoferta == 1;
         }
 
         private void CargarCategoriasIniciales()
@@ -152,7 +154,7 @@ namespace CapaPresentacionWPF // Asegúrate que este namespace es correcto
 
         private void ChkEnOferta_Changed(object sender, RoutedEventArgs e)
         {
-            dpOfertaHasta.IsEnabled = chkEnOferta.IsChecked == true;
+            //dpOfertaHasta.IsEnabled = chkEnOferta.IsChecked == true;
         }
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
@@ -205,11 +207,11 @@ namespace CapaPresentacionWPF // Asegúrate que este namespace es correcto
                 return;
             }
 
-            if (chkEnOferta.IsChecked == true && !dpOfertaHasta.SelectedDate.HasValue)
-            {
-                MessageBox.Show("Debe seleccionar una fecha 'Oferta Hasta' si el producto está en oferta.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
+            //if (chkEnOferta.IsChecked == true && !dpOfertaHasta.SelectedDate.HasValue)
+            //{
+               // MessageBox.Show("Debe seleccionar una fecha 'Oferta Hasta' si el producto está en oferta.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                //return;
+            //}
 
             // Actualizar el objeto productoActual con los valores de la UI
             productoActual.Codigo = txtCodigo.Text;
@@ -235,9 +237,9 @@ namespace CapaPresentacionWPF // Asegúrate que este namespace es correcto
                 MessageBox.Show("El Precio Final calculado no es válido. Se usará el Precio de Venta.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
-            productoActual.Enoferta = chkEnOferta.IsChecked == true ? 1 : 0;
-            productoActual.OfertaHasta = chkEnOferta.IsChecked == true && dpOfertaHasta.SelectedDate.HasValue ? dpOfertaHasta.SelectedDate.Value.ToString("yyyy-MM-dd") : "";
-            productoActual.Estado = 1; // Asumiendo que 1 es activo al guardar
+            //productoActual.Enoferta = chkEnOferta.IsChecked == true ? 1 : 0;
+            //productoActual.OfertaHasta = chkEnOferta.IsChecked == true && dpOfertaHasta.SelectedDate.HasValue ? dpOfertaHasta.SelectedDate.Value.ToString("yyyy-MM-dd") : "";
+            //productoActual.Estado = 1; // Asumiendo que 1 es activo al guardar
 
             try
             {

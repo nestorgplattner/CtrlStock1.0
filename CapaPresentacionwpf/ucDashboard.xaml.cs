@@ -66,12 +66,12 @@ namespace CapaPresentacionWPF.UserControls
 
                 using (var cmd = new SQLiteCommand(@"
                     SELECT
-                        fp.Plataforma || ' - ' || fp.MedioPago AS FormaPago,
-                        SUM(v.Total) AS TotalAmount
-                    FROM Ventas v
-                    JOIN FormaPago fp ON v.IdFormaPago = fp.IdFormaPago
-                    WHERE strftime('%Y-%m-%d', v.Fecha) = strftime('%Y-%m-%d', 'now', 'localtime') AND v.EsFlor = 0
-                    GROUP BY fp.Plataforma, fp.MedioPago;", conn))
+    fp.Plataforma || ' - ' || fp.MedioPago AS FormaPago,
+    SUM(v.Total) AS TotalAmount
+FROM Ventas v
+JOIN FormaPago fp ON v.IdFormaPago = fp.IdFormaPago
+WHERE strftime('%Y-%m-%d', v.Fecha) = strftime('%Y-%m-%d', 'now', 'localtime') AND v.EsFlor = 0
+GROUP BY fp.Plataforma, fp.MedioPago;", conn))
                 {
                     using (var reader = cmd.ExecuteReader())
                     {

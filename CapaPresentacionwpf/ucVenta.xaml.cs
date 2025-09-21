@@ -1,5 +1,6 @@
 ﻿using CapaPresentacionWPF.Data;
 using CapaPresentacionWPF.Model;
+using CapaPresentacionWPF.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -24,6 +25,8 @@ namespace CapaPresentacionWPF.UserControls
         private string tipoRapidoSeleccionado = null;
         private int idFormaPagoSeleccionada = 0; // Para el botón de forma de pago seleccionado
 
+        #region Inicialización y carga
+
         public ucVenta()
         {
             InitializeComponent();
@@ -39,33 +42,24 @@ namespace CapaPresentacionWPF.UserControls
 
         private void CargarProductos()
         {
-            productosDisponibles = new ProductoData().ObtenerProductos();
+            productosDisponibles = new ProductoData(connectionString).ObtenerProductos();
             lstProductos.ItemsSource = productosDisponibles;
         }
+
+        private void CargarFormasPago()
+        {
+            formasPagoDisponibles = new FormaPagoData(connectionString).ObtenerFormasPago();    
+        }
+
+        #endregion
+
+        #region Manejo de productos
 
         private void lstProductos_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (lstProductos.SelectedItem is Producto producto && producto.Stock > 0)
             {
-                var item = carrito.FirstOrDefault(i => i.IdProducto == producto.IdProducto);
-                if (item != null)
-                {
-                    carrito.Remove(item);
-                    item.Cantidad++;
-                    carrito.Add(item);
-                }
-                else
-                {
-                    carrito.Add(new ItemCarrito
-                    {
-                        IdProducto = producto.IdProducto,
-                        Codigo = producto.Codigo,
-                        Nombre = producto.Nombre,
-                        PrecioUnitario = producto.PrecioFinal,
-                        Cantidad = 1
-                    });
-                }
-                producto.Stock--;
+                CarritoService.AgregarProductoAlCarrito(carrito, producto);
                 RefrescarUI();
             }
         }
@@ -74,150 +68,15 @@ namespace CapaPresentacionWPF.UserControls
         {
             if (sender is Button btn && btn.DataContext is ItemCarrito item)
             {
-                if (item.IdProducto != -1)
-                {
-                    var producto = productosDisponibles.FirstOrDefault(p => p.IdProducto == item.IdProducto);
-                    if (producto != null)
-                    {
-                        producto.Stock += item.Cantidad;
-                    }
-                }
-                carrito.Remove(item);
+                CarritoService.EliminarItemDelCarrito(carrito, productosDisponibles, item);
                 RefrescarUI();
             }
         }
 
-        private void RefrescarUI()
-        {
-            lstProductos.Items.Refresh();
-            lstCarrito.ItemsSource = null;
-            lstCarrito.ItemsSource = carrito;
-            lstCarrito.Items.Refresh();
+        #endregion
 
-            lstPagosRealizados.ItemsSource = null;
-            lstPagosRealizados.ItemsSource = pagosRealizados;
-            lstPagosRealizados.Items.Refresh();
+        #region Manejo de pagos
 
-            ActualizarTotales();
-            lblCantidadItems.Text = carrito.Sum(item => item.Cantidad).ToString();
-            ActualizarMontoPendiente();
-
-            // Lógica de visibilidad del campo de monto a pagar
-            decimal totalVentaTemp = 0;
-            decimal.TryParse(lblTotal.Text, NumberStyles.Currency, CultureInfo.CurrentCulture, out totalVentaTemp);
-
-            if (totalVentaTemp > 0 && idFormaPagoSeleccionada != 0) // Si hay productos y una forma de pago seleccionada
-            {
-                gridMontoPago.Visibility = Visibility.Visible;
-                // Pre-llenar el campo de monto a pagar con el pendiente actual
-                decimal totalPagado = pagosRealizados.Sum(p => p.Monto);
-                decimal pendiente = totalVentaTemp - totalPagado;
-                txtMontoPago.Text = pendiente.ToString("N2", CultureInfo.InvariantCulture);
-            }
-            else
-            {
-                gridMontoPago.Visibility = Visibility.Collapsed;
-                txtMontoPago.Text = "0.00"; // Limpiar el texto cuando se oculta
-            }
-        }
-
-        private void ActualizarTotales()
-        {
-            decimal subtotal = carrito.Sum(i => i.PrecioUnitario * i.Cantidad);
-            decimal montoDescuento = subtotal * (porcentajeDescuento / 100m);
-            decimal total = subtotal - montoDescuento;
-
-            if (lblSubtotal != null) lblSubtotal.Text = subtotal.ToString("C", CultureInfo.CurrentCulture);
-            if (lblDescuento != null) lblDescuento.Text = montoDescuento.ToString("C", CultureInfo.CurrentCulture);
-            if (lblTotal != null) lblTotal.Text = total.ToString("C", CultureInfo.CurrentCulture);
-        }
-
-        private void ActualizarMontoPendiente()
-        {
-            decimal totalVenta = 0;
-            if (decimal.TryParse(lblTotal.Text, NumberStyles.Currency, CultureInfo.CurrentCulture, out totalVenta))
-            {
-                decimal totalPagado = pagosRealizados.Sum(p => p.Monto);
-                decimal pendiente = totalVenta - totalPagado;
-                lblMontoPendiente.Text = $"Pendiente: {pendiente.ToString("C", CultureInfo.CurrentCulture)}";
-                lblMontoPendiente.Foreground = (pendiente > 0) ? Brushes.Red : Brushes.Green;
-            }
-        }
-
-        private void chkDescuento15_Checked(object sender, RoutedEventArgs e)
-        {
-            porcentajeDescuento = 15;
-            if (numDescuentoPersonalizado != null)
-            {
-                numDescuentoPersonalizado.Value = 0;
-                numDescuentoPersonalizado.IsEnabled = false;
-            }
-            ActualizarTotales();
-        }
-
-        private void chkDescuento15_Unchecked(object sender, RoutedEventArgs e)
-        {
-            porcentajeDescuento = 0;
-            if (numDescuentoPersonalizado != null)
-            {
-                numDescuentoPersonalizado.IsEnabled = true;
-            }
-            ActualizarTotales();
-        }
-
-        private void numDescuentoPersonalizado_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (numDescuentoPersonalizado != null && numDescuentoPersonalizado.Value.HasValue && numDescuentoPersonalizado.Value.Value > 0)
-            {
-                porcentajeDescuento = numDescuentoPersonalizado.Value.Value;
-                if (chkDescuento15 != null) chkDescuento15.IsChecked = false;
-            }
-            else
-            {
-                porcentajeDescuento = 0;
-            }
-            ActualizarTotales();
-        }
-
-        private void cmbComprobante_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // No se usa actualmente
-        }
-
-        // --- MANEJO DE FORMAS DE PAGO ---
-
-        /// <summary>
-        /// Carga las formas de pago desde la base de datos.
-        /// Ahora carga Plataforma y MedioPago por separado.
-        /// </summary>
-        private void CargarFormasPago()
-        {
-            formasPagoDisponibles.Clear();
-            using (var con = new SQLiteConnection(connectionString))
-            {
-                con.Open();
-                using (var cmd = new SQLiteCommand("SELECT IdFormaPago, Plataforma, MedioPago FROM FormaPago ORDER BY Plataforma, MedioPago;", con))
-                {
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            formasPagoDisponibles.Add(new FormaPagoSimple
-                            {
-                                IdFormaPago = reader.GetInt32(reader.GetOrdinal("IdFormaPago")),
-                                Plataforma = reader.GetString(reader.GetOrdinal("Plataforma")),
-                                MedioPago = reader.GetString(reader.GetOrdinal("MedioPago"))
-                            });
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Maneja el clic en los botones de selección de forma de pago.
-        /// Mapea el texto del botón a la forma de pago correcta.
-        /// </summary>
         private void btnSeleccionarFormaPago_Click(object sender, RoutedEventArgs e)
         {
             // Resetear estilo de todos los botones de forma de pago
@@ -234,16 +93,16 @@ namespace CapaPresentacionWPF.UserControls
                 switch (nombreBoton)
                 {
                     case "EFECTIVO":
-                        formaPagoSeleccionadaDb = formasPagoDisponibles.FirstOrDefault(fp => fp.Plataforma == "Efectivo" && fp.MedioPago == "Contado");
+                        formaPagoSeleccionadaDb = formasPagoDisponibles.FirstOrDefault(fp => fp.Plataforma == "Contado" && fp.MedioPago == "Contado");
                         break;
                     case "TRANSFERENCIA":
-                        formaPagoSeleccionadaDb = formasPagoDisponibles.FirstOrDefault(fp => fp.Plataforma == "Transferencia Bancaria" && fp.MedioPago == "Alias");
+                        formaPagoSeleccionadaDb = formasPagoDisponibles.FirstOrDefault(fp => fp.Plataforma == "Transferencia" && fp.MedioPago == "Transferencia");
                         break;
                     case "MP / TARJETAS":
-                        formaPagoSeleccionadaDb = formasPagoDisponibles.FirstOrDefault(fp => fp.Plataforma == "MercadoPago Point" && fp.MedioPago == "QR");
+                        formaPagoSeleccionadaDb = formasPagoDisponibles.FirstOrDefault(fp => fp.Plataforma == "QR" && fp.MedioPago == "QR");
                         if (formaPagoSeleccionadaDb == null)
                         {
-                            formaPagoSeleccionadaDb = formasPagoDisponibles.FirstOrDefault(fp => fp.Plataforma.Contains("MercadoPago") || fp.MedioPago.Contains("Crédito"));
+                            formaPagoSeleccionadaDb = formasPagoDisponibles.FirstOrDefault(fp => fp.Plataforma.Contains("Tarjeta") || fp.MedioPago.Contains("Tarjeta"));
                         }
                         break;
                     default:
@@ -289,9 +148,6 @@ namespace CapaPresentacionWPF.UserControls
             }
         }
 
-        /// <summary>
-        /// Agrega un monto con la forma de pago seleccionada a la lista de pagos realizados.
-        /// </summary>
         private void btnAgregarPago_Click(object sender, RoutedEventArgs e)
         {
             if (idFormaPagoSeleccionada == 0)
@@ -300,44 +156,12 @@ namespace CapaPresentacionWPF.UserControls
                 return;
             }
 
-            decimal monto = 0m;
-            string textToParse = txtMontoPago.Text.Trim();
-
-            // Normalizar el separador decimal (reemplazar coma con punto)
-            textToParse = textToParse.Replace(",", ".");
-
-            // Eliminar separadores de miles (todos los puntos excepto el último, si existe)
-            int lastDotIndex = textToParse.LastIndexOf('.');
-            if (lastDotIndex != -1)
+            decimal monto;
+            string mensajeError;
+            if (!PagoService.ValidarMontoPago(txtMontoPago.Text.Trim(), out monto, out mensajeError))
             {
-                // Solo eliminar puntos en la parte entera
-                string integerPart = textToParse.Substring(0, lastDotIndex).Replace(".", "");
-                string decimalPart = textToParse.Substring(lastDotIndex + 1);
-                textToParse = integerPart + "." + decimalPart;
-            }
-
-            if (!decimal.TryParse(textToParse, NumberStyles.Number, CultureInfo.InvariantCulture, out monto))
-            {
-                MessageBox.Show("Formato de monto inválido. Por favor, use solo números, comas o puntos como separadores decimales (ej: 1234.56 o 1.234,56).", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(mensajeError, "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
-            }
-
-            // Ahora que el parsing es exitoso, verificar si el monto es válido para el pago
-            if (monto <= 0)
-            {
-                decimal totalVentaTemp = 0;
-                decimal.TryParse(lblTotal.Text, NumberStyles.Currency, CultureInfo.CurrentCulture, out totalVentaTemp);
-
-                // Permitir 0 solo si la venta total es 0
-                if (totalVentaTemp == 0 && monto == 0)
-                {
-                    // Caso permitido: 0 pago para una venta de 0 (ej. 100% de descuento)
-                }
-                else
-                {
-                    MessageBox.Show("El monto a pagar debe ser mayor que cero.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
             }
 
             // Calcular el total de la venta y el monto pendiente antes de agregar este pago
@@ -386,9 +210,6 @@ namespace CapaPresentacionWPF.UserControls
             if (btnMpTarjetas != null) btnMpTarjetas.Background = Brushes.LightGray;
         }
 
-        /// <summary>
-        /// Elimina un pago de la lista de pagos realizados.
-        /// </summary>
         private void btnEliminarPago_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is PagoTemporal pagoToRemove)
@@ -398,10 +219,183 @@ namespace CapaPresentacionWPF.UserControls
             }
         }
 
-        private void txtMontoPago_TextChanged(object sender, TextChangedEventArgs e)
+        #endregion
+
+        #region Actualización de UI
+
+        private void RefrescarUI()
         {
-            // Opcional: Puedes añadir lógica de validación o formato aquí si es necesario
+            lstProductos.Items.Refresh();
+            lstCarrito.ItemsSource = null;
+            lstCarrito.ItemsSource = carrito;
+            lstCarrito.Items.Refresh();
+
+            lstPagosRealizados.ItemsSource = null;
+            lstPagosRealizados.ItemsSource = pagosRealizados;
+            lstPagosRealizados.Items.Refresh();
+
+            ActualizarTotales();
+            lblCantidadItems.Text = carrito.Sum(item => item.Cantidad).ToString();
+            ActualizarMontoPendiente();
+
+            // Lógica de visibilidad del campo de monto a pagar
+            decimal totalVentaTemp = 0;
+            decimal.TryParse(lblTotal.Text, NumberStyles.Currency, CultureInfo.CurrentCulture, out totalVentaTemp);
+
+            if (totalVentaTemp > 0 && idFormaPagoSeleccionada != 0) // Si hay productos y una forma de pago seleccionada
+            {
+                gridMontoPago.Visibility = Visibility.Visible;
+                // Pre-llenar el campo de monto a pagar con el pendiente actual
+                decimal totalPagado = pagosRealizados.Sum(p => p.Monto);
+                decimal pendiente = totalVentaTemp - totalPagado;
+                txtMontoPago.Text = pendiente.ToString("N2", CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                gridMontoPago.Visibility = Visibility.Collapsed;
+                txtMontoPago.Text = "0.00"; // Limpiar el texto cuando se oculta
+            }
         }
+
+        private void ActualizarTotales()
+        {
+            var (subtotal, montoDescuento, total) = DescuentoService.CalcularTotales(carrito, porcentajeDescuento);
+
+            if (lblSubtotal != null) lblSubtotal.Text = subtotal.ToString("C", CultureInfo.CurrentCulture);
+            if (lblDescuento != null) lblDescuento.Text = montoDescuento.ToString("C", CultureInfo.CurrentCulture);
+            if (lblTotal != null) lblTotal.Text = total.ToString("C", CultureInfo.CurrentCulture);
+        }
+
+        private void ActualizarMontoPendiente()
+        {
+            decimal totalVenta = 0;
+            if (decimal.TryParse(lblTotal.Text, NumberStyles.Currency, CultureInfo.CurrentCulture, out totalVenta))
+            {
+                decimal totalPagado = pagosRealizados.Sum(p => p.Monto);
+                decimal pendiente = totalVenta - totalPagado;
+                lblMontoPendiente.Text = $"Pendiente: {pendiente.ToString("C", CultureInfo.CurrentCulture)}";
+                lblMontoPendiente.Foreground = (pendiente > 0) ? Brushes.Red : Brushes.Green;
+            }
+        }
+
+        #endregion
+
+        #region Descuentos
+
+        private void chkDescuento15_Checked(object sender, RoutedEventArgs e)
+        {
+            porcentajeDescuento = 15;
+            if (numDescuentoPersonalizado != null)
+            {
+                numDescuentoPersonalizado.Value = 0;
+                numDescuentoPersonalizado.IsEnabled = false;
+            }
+            ActualizarTotales();
+        }
+
+        private void chkDescuento15_Unchecked(object sender, RoutedEventArgs e)
+        {
+            porcentajeDescuento = 0;
+            if (numDescuentoPersonalizado != null)
+            {
+                numDescuentoPersonalizado.IsEnabled = true;
+            }
+            ActualizarTotales();
+        }
+
+        private void numDescuentoPersonalizado_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (numDescuentoPersonalizado != null && numDescuentoPersonalizado.Value.HasValue && numDescuentoPersonalizado.Value.Value > 0)
+            {
+                porcentajeDescuento = numDescuentoPersonalizado.Value.Value;
+                if (chkDescuento15 != null) chkDescuento15.IsChecked = false;
+            }
+            else
+            {
+                porcentajeDescuento = 0;
+            }
+            ActualizarTotales();
+        }
+
+        #endregion
+
+        #region Eventos de búsqueda y UI
+
+        private void txtBuscarProducto_GotFocus(object sender, RoutedEventArgs e)
+        {
+            UiHelpers.SetPlaceholder(txtBuscarProducto, "Buscar producto...", true);
+        }
+
+        private void txtBuscarProducto_LostFocus(object sender, RoutedEventArgs e)
+        {
+            UiHelpers.SetPlaceholder(txtBuscarProducto, "Buscar producto...", false);
+        }
+
+        private void txtBuscarProducto_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (productosDisponibles == null || lstProductos == null)
+                return;
+
+            string textoBusqueda = txtBuscarProducto.Text.Trim().ToLower();
+
+            if (string.IsNullOrWhiteSpace(textoBusqueda) || textoBusqueda == "buscar producto...")
+            {
+                lstProductos.ItemsSource = productosDisponibles;
+            }
+            else
+            {
+                var resultados = productosDisponibles
+                    .Where(p =>
+                        (p.Nombre != null && p.Nombre.ToLower().Contains(textoBusqueda)) ||
+                        (p.Codigo != null && p.Codigo.ToLower().Contains(textoBusqueda)))
+                    .ToList();
+                lstProductos.ItemsSource = resultados;
+            }
+            lstProductos.Items.Refresh();
+        }
+
+        #endregion
+
+        #region Venta rápida
+
+        private void btnTipoRapido_Click(object sender, RoutedEventArgs e)
+        {
+            UiHelpers.ResetButtonBackground(btnVarios, btnFlor);
+
+            if (sender is Button btn)
+            {
+                UiHelpers.SetButtonSelected(btn);
+                tipoRapidoSeleccionado = btn.Content.ToString();
+            }
+        }
+
+        private void btnAgregarRapido_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(tipoRapidoSeleccionado))
+            {
+                MessageBox.Show("Selecciona un tipo: VARIOS o FLOR.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (txtImporteRapido == null || !decimal.TryParse(txtImporteRapido.Text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal importe) || importe <= 0)
+            {
+                MessageBox.Show("Ingresa un importe válido.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            VentaRapidaService.AgregarVentaRapida(carrito, tipoRapidoSeleccionado, importe);
+
+            RefrescarUI();
+
+            tipoRapidoSeleccionado = null;
+            if (btnVarios != null) btnVarios.Background = Brushes.LightGray;
+            if (btnFlor != null) btnFlor.Background = Brushes.LightGray;
+            if (txtImporteRapido != null) txtImporteRapido.Text = "";
+        }
+
+        #endregion
+
+        #region Finalización y helpers
 
         private void BtnFinalizarCompra_Click(object sender, RoutedEventArgs e)
         {
@@ -512,6 +506,28 @@ namespace CapaPresentacionWPF.UserControls
 
                 tran.Commit();
                 MessageBox.Show("Venta guardada correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Preguntar si desea imprimir el ticket
+                var imprimir = MessageBox.Show(
+                    "¿Desea imprimir el ticket?",
+                    "Imprimir ticket",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question
+                );
+
+                if (imprimir == MessageBoxResult.Yes)
+                {
+                    ImpresoraTicket.ImprimirTicket(
+                        carrito,
+                        pagosRealizados,
+                        subtotal,
+                        descuento,
+                        totalFinalVenta,
+                        totalPagado,
+                        DateTime.Now
+                    );
+                }
+
                 ResetearPantalla(null, null);
             }
             catch (Exception ex)
@@ -548,146 +564,21 @@ namespace CapaPresentacionWPF.UserControls
             gridMontoPago.Visibility = Visibility.Collapsed;
         }
 
-        // --- CLASES INTERNAS PARA COMBOS Y PAGOS ---
-        public class FormaPagoSimple
+        private void btnFacturar_Click(object sender, RoutedEventArgs e)
         {
-            public int IdFormaPago { get; set; }
-            public string Plataforma { get; set; }
-            public string MedioPago { get; set; }
-            public string NombreDisplay => $"{Plataforma} - {MedioPago}";
+            FacturacionService.MostrarVentanaFacturacion(Window.GetWindow(this));
         }
 
-        public class ComprobanteSimple
-        {
-            public int IdComprobante { get; set; }
-            public string Tipo { get; set; }
-            public override string ToString() => Tipo;
-        }
-
-        /// <summary>
-        /// Clase temporal para almacenar los pagos realizados antes de guardarlos en la base de datos.
-        /// </summary>
-        public class PagoTemporal
-        {
-            public int IdFormaPago { get; set; }
-            public string FormaPagoDisplay { get; set; }
-            public decimal Monto { get; set; }
-        }
+        #endregion
 
         // --- BÚSQUEDA Y OTROS EVENTOS DE UI ---
-        private void txtBuscarProducto_GotFocus(object sender, RoutedEventArgs e)
+        private void txtMontoPago_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (txtBuscarProducto.Text == "Buscar producto...")
-            {
-                txtBuscarProducto.Text = "";
-                txtBuscarProducto.Foreground = Brushes.Black;
-            }
-        }
-
-        private void txtBuscarProducto_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtBuscarProducto.Text))
-            {
-                txtBuscarProducto.Text = "Buscar producto...";
-                txtBuscarProducto.Foreground = Brushes.Gray;
-            }
-        }
-
-        private void txtBuscarProducto_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (productosDisponibles == null || lstProductos == null)
-                return;
-
-            string textoBusqueda = txtBuscarProducto.Text.Trim().ToLower();
-
-            if (string.IsNullOrWhiteSpace(textoBusqueda) || textoBusqueda == "buscar producto...")
-            {
-                lstProductos.ItemsSource = productosDisponibles;
-            }
-            else
-            {
-                var resultados = productosDisponibles
-                    .Where(p =>
-                        (p.Nombre != null && p.Nombre.ToLower().Contains(textoBusqueda)) ||
-                        (p.Codigo != null && p.Codigo.ToLower().Contains(textoBusqueda)))
-                    .ToList();
-                lstProductos.ItemsSource = resultados;
-            }
-            lstProductos.Items.Refresh();
-        }
-
-        // --- VENTA RÁPIDA ---
-        private void btnTipoRapido_Click(object sender, RoutedEventArgs e)
-        {
-            if (btnVarios != null) btnVarios.Background = Brushes.LightGray;
-            if (btnFlor != null) btnFlor.Background = Brushes.LightGray;
-
-            if (sender is Button btn)
-            {
-                btn.Background = Brushes.LightGreen;
-                tipoRapidoSeleccionado = btn.Content.ToString();
-            }
-        }
-
-        private void btnAgregarRapido_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(tipoRapidoSeleccionado))
-            {
-                MessageBox.Show("Selecciona un tipo: VARIOS o FLOR.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (txtImporteRapido == null || !decimal.TryParse(txtImporteRapido.Text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal importe) || importe <= 0)
-            {
-                MessageBox.Show("Ingresa un importe válido.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var existingRapidItem = carrito.FirstOrDefault(item =>
-                item.IdProducto == -1 &&
-                item.Codigo == tipoRapidoSeleccionado.ToUpper());
-
-            if (existingRapidItem != null)
-            {
-                carrito.Remove(existingRapidItem);
-                existingRapidItem.Cantidad++;
-                existingRapidItem.PrecioUnitario += importe;
-                existingRapidItem.Nombre = $"{tipoRapidoSeleccionado} (x{existingRapidItem.Cantidad})";
-                carrito.Add(existingRapidItem);
-            }
-            else
-            {
-                carrito.Add(new ItemCarrito
-                {
-                    IdProducto = -1,
-                    Codigo = tipoRapidoSeleccionado.ToUpper(),
-                    Nombre = $"{tipoRapidoSeleccionado} (x1)",
-                    PrecioUnitario = importe,
-                    Cantidad = 1
-                });
-            }
-
-            RefrescarUI();
-
-            tipoRapidoSeleccionado = null;
-            if (btnVarios != null) btnVarios.Background = Brushes.LightGray;
-            if (btnFlor != null) btnFlor.Background = Brushes.LightGray;
-            if (txtImporteRapido != null) txtImporteRapido.Text = "";
+            // Opcional: Puedes añadir lógica de validación o formato aquí si es necesario
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e) { }
         private void TextBox_LostFocus(object sender, RoutedEventArgs e) { }
-
-        private void btnFacturar_Click(object sender, RoutedEventArgs e)
-        {
-            var ventana = new VentanaFacturacion();
-            bool? resultado = ventana.ShowDialog();
-
-            if (resultado == true)
-            {
-                var cliente = ventana.ClienteSeleccionado;
-                MessageBox.Show($"Facturando a: {cliente.Nombre} ({cliente.CUIT})");
-            }
-        }
     }
 }
+

@@ -1,0 +1,223 @@
+﻿<UserControl x:Class="CapaPresentacionWPF.UserControls.ucConfiguracion"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000"
+             Background="#f0f2f5" FontFamily="Segoe UI">
+
+    <UserControl.Resources>
+        <DropShadowEffect x:Key="PanelShadow" ShadowDepth="3" BlurRadius="10" Color="#888" Opacity="0.15"/>
+
+        <Style x:Key="MetricPanelStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderBrush" Value="#ddd"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Effect" Value="{StaticResource PanelShadow}"/>
+        </Style>
+
+        <Style x:Key="HeaderLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#222"/>
+        </Style>
+
+        <Style x:Key="FormLabelStyle" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#444"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+        </Style>
+
+        <Style x:Key="FormInputStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="#ddd"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="#f9f9f9"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True" CornerRadius="6">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderBrush" Value="#007acc"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="true">
+                                <Setter Property="BorderBrush" Value="#007acc"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SaveButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#007acc"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0,20,0,0"/>
+            <Setter Property="Effect" Value="{StaticResource PanelShadow}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="ButtonBorder" CornerRadius="8" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#005a9c"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#003f72"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="20">
+            <Border Style="{StaticResource MetricPanelStyle}">
+                <StackPanel>
+                    <TextBlock Text="Datos Generales" Style="{StaticResource HeaderLabelStyle}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Nombre Empresa:" Style="{StaticResource FormLabelStyle}" Grid.Row="0" Grid.Column="0"/>
+                        <TextBox x:Name="txtNombreEmpresa" Style="{StaticResource FormInputStyle}" Grid.Row="0" Grid.Column="1"/>
+
+                        <TextBlock Text="Dirección:" Style="{StaticResource FormLabelStyle}" Grid.Row="1" Grid.Column="0"/>
+                        <TextBox x:Name="txtDireccion" Style="{StaticResource FormInputStyle}" Grid.Row="1" Grid.Column="1"/>
+
+                        <TextBlock Text="Teléfono:" Style="{StaticResource FormLabelStyle}" Grid.Row="2" Grid.Column="0"/>
+                        <TextBox x:Name="txtTelefono" Style="{StaticResource FormInputStyle}" Grid.Row="2" Grid.Column="1"/>
+
+                        <TextBlock Text="Website:" Style="{StaticResource FormLabelStyle}" Grid.Row="3" Grid.Column="0"/>
+                        <TextBox x:Name="txtWebsite" Style="{StaticResource FormInputStyle}" Grid.Row="3" Grid.Column="1"/>
+
+                        <TextBlock Text="Instagram:" Style="{StaticResource FormLabelStyle}" Grid.Row="4" Grid.Column="0"/>
+                        <TextBox x:Name="txtInstagram" Style="{StaticResource FormInputStyle}" Grid.Row="4" Grid.Column="1"/>
+
+                        <TextBlock Text="Facebook:" Style="{StaticResource FormLabelStyle}" Grid.Row="5" Grid.Column="0"/>
+                        <TextBox x:Name="txtFacebook" Style="{StaticResource FormInputStyle}" Grid.Row="5" Grid.Column="1"/>
+
+                        <TextBlock Text="TikTok:" Style="{StaticResource FormLabelStyle}" Grid.Row="6" Grid.Column="0"/>
+                        <TextBox x:Name="txtTiktok" Style="{StaticResource FormInputStyle}" Grid.Row="6" Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource MetricPanelStyle}">
+                <StackPanel>
+                    <TextBlock Text="Mercado Pago (Credenciales)" Style="{StaticResource HeaderLabelStyle}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Token:" Style="{StaticResource FormLabelStyle}" Grid.Row="0" Grid.Column="0"/>
+                        <TextBox x:Name="txtMpToken" Style="{StaticResource FormInputStyle}" Grid.Row="0" Grid.Column="1"/>
+
+                        <TextBlock Text="Store ID:" Style="{StaticResource FormLabelStyle}" Grid.Row="1" Grid.Column="0"/>
+                        <TextBox x:Name="txtMpStoreId" Style="{StaticResource FormInputStyle}" Grid.Row="1" Grid.Column="1"/>
+
+                        <TextBlock Text="POS ID:" Style="{StaticResource FormLabelStyle}" Grid.Row="2" Grid.Column="0"/>
+                        <TextBox x:Name="txtMpPosId" Style="{StaticResource FormInputStyle}" Grid.Row="2" Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource MetricPanelStyle}">
+                <StackPanel>
+                    <TextBlock Text="Mercado Pago (Comisiones)" Style="{StaticResource HeaderLabelStyle}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Tarjeta de Débito (%):" Style="{StaticResource FormLabelStyle}" Grid.Row="0" Grid.Column="0"/>
+                        <TextBox x:Name="txtComisionMP_Debito" Style="{StaticResource FormInputStyle}" Grid.Row="0" Grid.Column="1"/>
+
+                        <TextBlock Text="Tarjeta de Crédito (%):" Style="{StaticResource FormLabelStyle}" Grid.Row="1" Grid.Column="0"/>
+                        <TextBox x:Name="txtComisionMP_Credito" Style="{StaticResource FormInputStyle}" Grid.Row="1" Grid.Column="1"/>
+
+                        <TextBlock Text="Tarjeta Prepaga (%):" Style="{StaticResource FormLabelStyle}" Grid.Row="2" Grid.Column="0"/>
+                        <TextBox x:Name="txtComisionMP_Prepaga" Style="{StaticResource FormInputStyle}" Grid.Row="2" Grid.Column="1"/>
+
+                        <TextBlock Text="QR (%):" Style="{StaticResource FormLabelStyle}" Grid.Row="3" Grid.Column="0"/>
+                        <TextBox x:Name="txtComisionMP_QR" Style="{StaticResource FormInputStyle}" Grid.Row="3" Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource MetricPanelStyle}">
+                <StackPanel>
+                    <TextBlock Text="Arca" Style="{StaticResource HeaderLabelStyle}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Token:" Style="{StaticResource FormLabelStyle}" Grid.Row="0" Grid.Column="0"/>
+                        <TextBox x:Name="txtArcaToken" Style="{StaticResource FormInputStyle}" Grid.Row="0" Grid.Column="1"/>
+
+                        <TextBlock Text="Key:" Style="{StaticResource FormLabelStyle}" Grid.Row="1" Grid.Column="0"/>
+                        <TextBox x:Name="txtArcaKey" Style="{StaticResource FormInputStyle}" Grid.Row="1" Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Button Content="Guardar Configuración" Style="{StaticResource SaveButtonStyle}" Click="SaveButton_Click"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

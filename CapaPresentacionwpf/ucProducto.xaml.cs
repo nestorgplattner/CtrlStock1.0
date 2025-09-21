@@ -12,20 +12,22 @@ namespace CapaPresentacionWPF.UserControls
     {
         private List<Producto> productosFiltrados;
         private List<Producto> productosOriginal;
-        private readonly CategoriaData _categoriaData = new CategoriaData();
-        private readonly ProductoData _productoData = new ProductoData();
+        private readonly CategoriaData _categoriaData;
+        private readonly ProductoData _productoData;
         private int paginaActual = 1;
         private int cantidadPorPagina = 20;
         private int totalPaginas = 1;
+        private readonly string connString = @"Data Source=Data\stockdb.db;Version=3;";
 
         public ucProducto()
         {
             InitializeComponent();
 
+            _categoriaData = new CategoriaData(connString);
+            _productoData = new ProductoData(connString);
+
             CargarProductos();
         }
-
-
 
         private void CargarProductos()
         {
@@ -94,7 +96,6 @@ namespace CapaPresentacionWPF.UserControls
         {
             var ventana = new frmNuevoProducto();
 
-            // Mostrar una sola vez y guardar el resultado
             bool? resultado = ventana.ShowDialog();
 
             if (resultado == true)
@@ -157,20 +158,16 @@ namespace CapaPresentacionWPF.UserControls
         {
             var ventana = new frmCategoria();
             bool? resultado = ventana.ShowDialog();
-
         }
-
-
 
         private void btnGuardar_Click(object sender, RoutedEventArgs e)
         {
-            // Según tu comentario, por ahora solo mensaje.
             MessageBox.Show("Guardado (este formulario es solo de edición por ahora)", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void btnCancelar_Click(object sender, RoutedEventArgs e)
         {
-           
+            // Si querés agregar algo aquí.
         }
     }
 }

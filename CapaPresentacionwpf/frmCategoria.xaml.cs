@@ -126,6 +126,8 @@ namespace CapaPresentacionWPF
             }
         }
 
+
+
         private void BtnAgregarSubcategoria_Click(object sender, RoutedEventArgs e)
         {
             if (categoriaSeleccionada == null)

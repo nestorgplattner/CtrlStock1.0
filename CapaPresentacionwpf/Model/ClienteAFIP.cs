@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CapaPresentacionwpf.Model
+namespace CapaPresentacionWPF.Model
 {
     public class ClienteAFIP
     {

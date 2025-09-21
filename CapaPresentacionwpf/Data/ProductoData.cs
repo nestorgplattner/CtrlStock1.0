@@ -1,77 +1,97 @@
-using CapaPresentacionwpf.Model;
-using CapaPresentacionWPF.Model;
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using CapaPresentacionWPF.Model;
 
 namespace CapaPresentacionWPF.Data
 {
     public class ProductoData
     {
-        private string connectionString;
+        private readonly string connString;
 
+        // Constructor para inicializar la cadena de conexiï¿½n
         public ProductoData(string connString)
         {
-            connectionString = connString;
+            this.connString = connString;
+
         }
 
+        /// <summary>
+        /// Obtiene una lista de todos los productos disponibles en la base de datos.
+        /// </summary>
+        /// <returns>Una lista de objetos Producto.</returns>
         public List<Producto> ObtenerProductos()
         {
-            List<Producto> productos = new List<Producto>();
-            string query = @"
+            var productos = new List<Producto>();
+
+            // Sentencia SQL para seleccionar todos los productos con sus categorï¿½as.
+            // Hacemos un JOIN para obtener el nombre de la categorï¿½a en lugar del ID.
+            string sql = @"
                 SELECT 
-                    p.IdProducto, p.Codigo, p.Nombre, p.Precio, p.PrecioCompra, p.PorcentajeGanancia, p.PrecioFinal, p.Stock, p.Enoferta, p.OfertaHasta,
-                    c.Nombre AS CategoriaNombre,
-                    sc.Nombre AS SubcategoriaNombre
+                    p.IdProducto,
+                    p.Codigo,
+                    p.Nombre,
+                    p.Stock,
+                    p.PrecioFinal,
+                    c.Nombre AS CategoriaNombre -- Se renombra para evitar conflictos
                 FROM Producto AS p
                 LEFT JOIN Categoria AS c ON p.Categoria = c.IdCategoria
-                LEFT JOIN Categoria AS sc ON p.Subcategoria = sc.IdCategoria;
+                WHERE p.Estado IS NULL OR p.Estado = 1; -- Filtramos solo los productos activos
             ";
 
-            using (var conn = new SQLiteConnection(connectionString))
+            try
             {
-                conn.Open();
-                using (var cmd = new SQLiteCommand(query, conn))
+                // Usamos "using" para asegurar que la conexiï¿½n se cierre correctamente
+                using (var con = new SQLiteConnection(connString))
                 {
-                    using (var reader = cmd.ExecuteReader())
+                    con.Open();
+                    using (var cmd = new SQLiteCommand(sql, con))
                     {
-                        while (reader.Read())
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            productos.Add(new Producto
+                            while (reader.Read())
                             {
-                                IdProducto = reader.GetInt32(reader.GetOrdinal("IdProducto")),
-                                Codigo = reader.GetString(reader.GetOrdinal("Codigo")),
-                                Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
-                                Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
-                                PrecioCompra = reader.GetDecimal(reader.GetOrdinal("PrecioCompra")),
-                                PorcentajeGanancia = reader.GetDecimal(reader.GetOrdinal("PorcentajeGanancia")),
-                                PrecioFinal = reader.GetDecimal(reader.GetOrdinal("PrecioFinal")),
-                                Stock = reader.GetInt32(reader.GetOrdinal("Stock")),
-                                Enoferta = reader.GetInt32(reader.GetOrdinal("Enoferta")),
-                               // Producto.FechaVencimiento = reader["FechaVencimiento"] as DateTime?;
-                                OfertaHasta = reader.IsDBNull(reader.GetOrdinal("OfertaHasta")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("OfertaHasta")),
-                                CategoriaNombre = reader.IsDBNull(reader.GetOrdinal("CategoriaNombre")) ? "Sin Categoría" : reader.GetString(reader.GetOrdinal("CategoriaNombre")),
-                                SubcategoriaNombre = reader.IsDBNull(reader.GetOrdinal("SubcategoriaNombre")) ? "Sin Subcategoría" : reader.GetString(reader.GetOrdinal("SubcategoriaNombre"))
-                            });
+                                productos.Add(new Producto
+                                {
+                                    IdProducto = reader.GetInt32(reader.GetOrdinal("IdProducto")),
+                                    Codigo = reader["Codigo"] as string,
+                                    Nombre = reader["Nombre"] as string,
+                                    Stock = reader.IsDBNull(reader.GetOrdinal("Stock")) ? 0 : reader.GetInt32(reader.GetOrdinal("Stock")),
+                                    PrecioFinal = reader.IsDBNull(reader.GetOrdinal("PrecioFinal")) ? 0.0m : reader.GetDecimal(reader.GetOrdinal("PrecioFinal")),
+                                    // Se agrega la categorï¿½a a la clase Producto para su uso en la UI
+                                    CategoriaNombre = reader["CategoriaNombre"] as string
+                                });
+                            }
                         }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                // Manejo de errores: imprime la excepciï¿½n para depuraciï¿½n.
+                Console.WriteLine($"Error al obtener productos: {ex.Message}");
+                // En una aplicaciï¿½n real, se deberï¿½a registrar el error y/o notificar al usuario.
+            }
+
             return productos;
+        }
+
+        // Mï¿½todos pendientes
+        public void AddProducto(Producto prod)
+        {
+            // TODO: INSERT INTO Productos (...)
+        }
+
+        public void UpdateProducto(Producto prod)
+        {
+            // TODO: UPDATE Productos SET ... WHERE IdProducto = ...
         }
 
         public void EliminarProducto(int idProducto)
         {
-            string query = "DELETE FROM Producto WHERE IdProducto = @IdProducto;";
-            using (var conn = new SQLiteConnection(connectionString))
-            {
-                conn.Open();
-                using (var cmd = new SQLiteCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@IdProducto", idProducto);
-                    cmd.ExecuteNonQuery();
-                }
-            }
+            // ya lo tenï¿½s, o bien asegurate de su existencia
         }
     }
 }
+
+

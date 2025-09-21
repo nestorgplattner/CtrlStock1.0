@@ -1,4 +1,4 @@
-﻿using CapaPresentacionwpf.Model;
+﻿
 using CapaPresentacionWPF.Model;
 using System.Data;
 using System.Data.SQLite;
